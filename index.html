@@ -373,16 +373,24 @@
                                     const isToday = isSameDay(new Date(), date);
                                     const isSelected = selectedDate && isSameDay(selectedDate, date);
                                     const isHoliday = dayEvents.some(e => e.type === 'holiday');
-                                    const isWeekendDay = isWeekend(date);
+                                    const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
 
                                     let bgClass = "bg-white"; 
-                                    if (isWeekendDay) {
-                                        bgClass = "bg-red-100"; // ปรับสีพื้นหลังวันเสาร์-อาทิตย์ให้เข้มและเด่นชัดขึ้น
+                                    
+                                    // กำหนดสีพื้นหลังตามวัน (ปรับให้เข้มขึ้นเล็กน้อยเพื่อให้เห็นชัดเจน)
+                                    if (dayOfWeek === 6) { 
+                                        bgClass = "bg-[#F3E1F6]"; // วันเสาร์
+                                    } else if (dayOfWeek === 0) {
+                                        bgClass = "bg-[#FFD6D6]"; // วันอาทิตย์
                                     }
+
+                                    // วันหยุดนักขัตฤกษ์
+                                    if (isHoliday) {
+                                        bgClass = "bg-[#FFFFAA]"; 
+                                    }
+
                                     if (isSelected) {
                                         bgClass = `${theme.bg}`;
-                                    } else if (isHoliday && !isWeekendDay) {
-                                        bgClass = "bg-rose-50"; 
                                     }
 
                                     return (
@@ -401,7 +409,7 @@
                                             <div className={`
                                                 text-sm font-semibold mb-1 w-7 h-7 flex items-center justify-center rounded-full transition-colors
                                                 ${isToday ? `${theme.bg} ${theme.text} shadow-sm` : ''}
-                                                ${(isWeekendDay || isHoliday) && !isToday ? 'text-red-500 font-bold' : 'text-slate-600'}
+                                                ${(dayOfWeek === 0 || dayOfWeek === 6 || isHoliday) && !isToday ? 'text-slate-700 font-bold' : 'text-slate-600'}
                                             `}>
                                                 {date.getDate()}
                                             </div>
@@ -410,14 +418,14 @@
                                                 {dayEvents.slice(0, 3).map((ev, i) => (
                                                     <div 
                                                         key={i} 
-                                                        className={`text-[10px] px-2 py-0.5 rounded-md truncate font-medium ${getTypeColor(ev.type)} shadow-sm`}
+                                                        className={`text-[10px] px-2 py-0.5 rounded-md truncate font-medium ${getTypeColor(ev.type)} shadow-sm bg-white/80`}
                                                         title={ev.title}
                                                     >
                                                         {ev.title}
                                                     </div>
                                                 ))}
                                                 {dayEvents.length > 3 && (
-                                                    <div className="text-[10px] text-slate-400 pl-1 font-medium">
+                                                    <div className="text-[10px] text-slate-500 pl-1 font-medium">
                                                         +{dayEvents.length - 3}
                                                     </div>
                                                 )}
